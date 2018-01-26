@@ -62,7 +62,6 @@ function check_login_wp($username, $password) {
                 }
             }
             if(strlen($databaseTable) > 0 && strlen($dataTable) > 0) {
-                $username = 'Nack';
                 $sql = "SELECT * FROM $databaseTable.$dataTable WHERE `username`='$username'";
                 $getData = $wpdb->get_row($sql);
                 if($getData) {
@@ -76,7 +75,6 @@ function check_login_wp($username, $password) {
                 }
             }
         }
-        die();
     }
 }
 
