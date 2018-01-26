@@ -1,6 +1,12 @@
 <div class="wrap">
     <h1>Auto Create User Settings</h1>
 
+    <?php if($_POST): ?>
+    <div id="setting-error-settings_updated" class="updated settings-error notice is-dismissible">
+        <p><strong>Settings saved.</strong></p><button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
+    </div>
+    <?php endif; ?>
+
     <form method="post" action="options-general.php?page=acu-setting" novalidate="novalidate">
         <input type="hidden" name="page" value="acu-setting">
         <table class="form-table">

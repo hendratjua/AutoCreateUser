@@ -101,13 +101,30 @@ function acuSetting() {
 
     $dataTable = '';
     $databaseTable = '';
+    $table = $wpdb->prefix . "acu_setting";
+    $sql = "SELECT * FROM $table;";
+    $getDataTable = $wpdb->get_results($sql);
+    if($getDataTable) {
+        $databaseTable = '';
+        $dataTable = '';
+        foreach ($getDataTable as $list) {
+            if ($list->name === 'database_name') {
+                $databaseTable = $list->value;
+            }
+            if ($list->name === 'table_name') {
+                $dataTable = $list->value;
+            }
+        }
+    }
+
     if($_POST) {
+
         $table = $wpdb->prefix . "acu_setting";
-        $databaseName = isset($_POST['databaseName']) ? $_POST['databaseName'] : '';
+        $databaseName = isset($_POST['databaseName']) ? esc_attr($_POST['databaseName']) : '';
         if(strlen($databaseName) > 0) {
             $databaseTable = $databaseName;
         }
-        $tableName = isset($_POST['tableName']) ? $_POST['tableName'] : '';
+        $tableName = isset($_POST['tableName']) ? esc_attr($_POST['tableName']) : '';
         if(strlen($tableName) > 0) {
             $dataTable = $tableName;
         }
@@ -115,18 +132,10 @@ function acuSetting() {
         $wpdb->query($sql);
         $sql = "UPDATE $table SET `value`='$dataTable' WHERE `name`='table_name';";
         $wpdb->query($sql);
-        add_action( 'admin_notices', 'acuUpdateNotice' );
+
     }
 
     include "setting-page.php";
-}
-
-function acuUpdateNotice() {
-    ?>
-    <div class="updated notice">
-        <p><?php _e( 'Success Update!', 'acuS360' ); ?></p>
-    </div>
-    <?php
 }
 
 function installData() {
