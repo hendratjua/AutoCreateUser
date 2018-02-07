@@ -44,7 +44,7 @@ add_action('wp_authenticate', 'doLogin', 30, 2);
 
 function check_login_wp($username, $password) {
     global $wpdb;
-
+    session_start();
     $user = get_user_by('login', $username);
     if($user === false) {
         $table = $wpdb->prefix . "acu_setting";
@@ -71,11 +71,49 @@ function check_login_wp($username, $password) {
                         $email = $getData->email;
                         $name = $getData->usertitle;
                         createUserWp($username, $password, $email, $name);
+
+                        $_SESSION['vb']['userid'] = $getData->userid;
+                        $_SESSION['vb']['groupid'] = $getData->usergroupid;
+                        $_SESSION['vb']['username'] = $getData->username;
+                        $_SESSION['vb']['logouthash'] = '';
+
                     }
                 }
             }
         }
     }
+    else {
+
+        $table = $wpdb->prefix . "acu_setting";
+        $sql = "SELECT * FROM $table;";
+        $getDataTable = $wpdb->get_results($sql);
+        if($getDataTable) {
+            $databaseTable = '';
+            $dataTable = '';
+            foreach($getDataTable as $list) {
+                if($list->name === 'database_name') {
+                    $databaseTable = $list->value;
+                }
+                if($list->name === 'table_name') {
+                    $dataTable = $list->value;
+                }
+            }
+            if(strlen($databaseTable) > 0 && strlen($dataTable) > 0) {
+                $sql = "SELECT * FROM $databaseTable.$dataTable WHERE `username`='$username'";
+                $getData = $wpdb->get_row($sql);
+                if($getData) {
+
+                    $_SESSION['vb']['userid'] = $getData->userid;
+                    $_SESSION['vb']['groupid'] = $getData->usergroupid;
+                    $_SESSION['vb']['username'] = $getData->username;
+                    $_SESSION['vb']['logouthash'] = '';
+
+                }
+            }
+        }
+
+    }
+
 }
 
 function createUserWp($username, $password, $email, $name) {
