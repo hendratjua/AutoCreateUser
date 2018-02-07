@@ -44,7 +44,7 @@ add_action('wp_authenticate', 'doLogin', 30, 2);
 
 function check_login_wp($username, $password) {
     global $wpdb;
-    //session_start();
+    session_start();
     $user = get_user_by('login', $username);
     if($user === false) {
         $table = $wpdb->prefix . "acu_setting";
