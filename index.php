@@ -44,7 +44,7 @@ add_action('wp_authenticate', 'doLogin', 30, 2);
 
 function check_login_wp($username, $password) {
     global $wpdb;
-    session_start();
+    //session_start();
     $user = get_user_by('login', $username);
     if($user === false) {
         $table = $wpdb->prefix . "acu_setting";
@@ -164,10 +164,28 @@ function acuSetting() {
         if(strlen($tableName) > 0) {
             $dataTable = $tableName;
         }
-        $sql = "UPDATE $table SET `value`='$databaseTable' WHERE `name`='database_name';";
-        $wpdb->query($sql);
-        $sql = "UPDATE $table SET `value`='$dataTable' WHERE `name`='table_name';";
-        $wpdb->query($sql);
+
+        $sql = "SELECT * FROM $table WHERE `name`='database_name';";
+        $get_data = $wpdb->get_row($sql);
+        if($get_data) {
+            $sql = "UPDATE $table SET `value`='$databaseTable' WHERE `name`='database_name';";
+            $wpdb->query($sql);
+        }
+        else {
+            $sql = "INSERT INTO $table (`name`, `value`) VALUES ('database_name', '$databaseTable');";
+            $wpdb->query($sql);
+        }
+
+        $sql = "SELECT * FROM $table WHERE `name`='table_name';";
+        $get_data = $wpdb->get_row($sql);
+        if($get_data) {
+            $sql = "UPDATE $table SET `value`='$dataTable' WHERE `name`='table_name';";
+            $wpdb->query($sql);
+        }
+        else {
+            $sql = "INSERT INTO $table (`name`, `value`) VALUES ('table_name', '$dataTable');";
+            $wpdb->query($sql);
+        }
 
     }
 
